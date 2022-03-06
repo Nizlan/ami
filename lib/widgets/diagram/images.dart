@@ -8,7 +8,8 @@ class Images extends StatefulWidget {
   final Activity activity;
   final double size;
   final double rotation;
-  Images(this.activity, this.size, this.rotation);
+  final String emoji;
+  Images(this.activity, this.size, this.rotation, this.emoji);
   @override
   _ImagesState createState() => _ImagesState();
 }
@@ -17,6 +18,7 @@ class _ImagesState extends State<Images> {
   late List<String> _time;
   late double _angle;
   late double _shift;
+  static double emojiSide = 40;
   @override
   void initState() {
     _time = DateFormat('HH:mm').format(DateTime.now()).split(':');
@@ -30,31 +32,33 @@ class _ImagesState extends State<Images> {
     return Container(
       child: Positioned(
         left: (2 * pi * (widget.activity.start + widget.rotation - _angle)) > 0
-            ? widget.size * 0.92 / 2 +
-                widget.size *
-                    0.91 /
+            ? (widget.size - emojiSide) / 2 +
+                (widget.size - emojiSide) /
                     2 *
                     sin(2 *
                         pi *
                         (widget.activity.start + widget.rotation - _angle))
-            : widget.size * 0.92 / 2 +
-                widget.size *
-                    0.91 /
+            : (widget.size - emojiSide) / 2 +
+                (widget.size - emojiSide) /
                     2 *
                     sin(2 *
                             pi *
                             (widget.activity.start + widget.rotation - _angle) +
                         pi * 2),
-        top: widget.size * 0.95 / 2 -
-            widget.size *
-                0.91 /
+        top: (widget.size - emojiSide) / 2 -
+            (widget.size - emojiSide) /
                 2 *
                 cos(2 *
                     pi *
                     (widget.activity.start + widget.rotation - _angle)),
-        child: Image.asset(
-          'assets/images/running.png',
-          scale: 6.0,
+        child: Container(
+          alignment: Alignment.center,
+          height: emojiSide,
+          width: emojiSide,
+          child: Text(
+            widget.emoji,
+            style: TextStyle(fontSize: 30),
+          ),
         ),
       ),
     );

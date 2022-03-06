@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:ami/models/activity.dart';
 import 'package:ami/providers/activities_provider.dart';
 import 'package:ami/widgets/diagram/images.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'activity_arc.dart';
 import 'dayWidget.dart';
@@ -10,7 +11,10 @@ import 'dayWidget.dart';
 class DayContainer extends StatefulWidget {
   final MediaQueryData mediaQuery;
   final List<Activity> activities;
-  DayContainer(this.mediaQuery, this.activities);
+  DayContainer(
+    this.mediaQuery,
+    this.activities,
+  );
   @override
   _DayContainerState createState() => _DayContainerState();
 }
@@ -19,14 +23,13 @@ class _DayContainerState extends State<DayContainer> {
   double multiplier = 2.7;
 
   toColor(colorString) {
-    print(colorString);
     String valueString = colorString.split('(0x')[1].split(')')[0];
     int value = int.parse(valueString, radix: 16);
     return Color(value);
   }
 
   double size = 330;
-  listEl(Activity act) {
+  listEl(BasicActivity act) {
     if (act.start != 2) {
       return CustomPaint(
         painter: ActivityArc(
@@ -43,8 +46,11 @@ class _DayContainerState extends State<DayContainer> {
 
   imageList(Activity act) {
     if (act.start != 2) {
-      return Images(act, size,
-          Provider.of<Activities>(this.context, listen: false).rotation);
+      return Images(
+          act,
+          size,
+          Provider.of<Activities>(this.context, listen: false).rotation,
+          act.emoji);
     } else {
       return SizedBox();
     }

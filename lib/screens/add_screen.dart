@@ -1,10 +1,11 @@
-import 'package:ami/providers/diagram_params_provider.dart';
+import 'package:ami/utils/emoji_picker.dart';
+import 'package:ami/utils/time_view_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:ami/models/button_type.dart';
+import 'package:ami/enums/button_type.dart';
 import 'package:ami/providers/activities_provider.dart';
 import 'package:ami/widgets/color_picker.dart';
 import 'package:ami/widgets/pick_time.dart';
@@ -21,15 +22,16 @@ class AddScreen extends StatefulWidget {
 
 class _AddScreenState extends State<AddScreen> {
   Color color = Colors.white;
-  var hour1 = '0';
-  var minute1 = '0';
-  var hour2 = '0';
-  var minute2 = '0';
+  int hour1 = 0;
+  int minute1 = 0;
+  int hour2 = 0;
+  int minute2 = 0;
   var nightStart1;
   var nightEnd1;
   var isTime = false;
   late bool isAllowed;
   var uuid = Uuid();
+  String emoji = '🐵';
   final _textController = TextEditingController();
   void callbackColor(Color color) {
     setState(() {
@@ -57,25 +59,25 @@ class _AddScreenState extends State<AddScreen> {
     return Color(value);
   }
 
-  void callbackh1(String time) {
+  void callbackh1(int time) {
     setState(() {
       hour1 = time;
     });
   }
 
-  void callbackm1(String time) {
+  void callbackm1(int time) {
     setState(() {
       minute1 = time;
     });
   }
 
-  void callbackh2(String time) {
+  void callbackh2(int time) {
     setState(() {
       hour2 = time;
     });
   }
 
-  void callbackm2(String time) {
+  void callbackm2(int time) {
     setState(() {
       minute2 = time;
     });
@@ -83,7 +85,7 @@ class _AddScreenState extends State<AddScreen> {
 
   void dateCallback(DateTime date) {
     setState(() {
-      Provider.of<Activities>(this.context, listen: true).date1.date = date;
+      Provider.of<Activities>(this.context, listen: true).date.date = date;
     });
   }
 
@@ -172,11 +174,8 @@ class _AddScreenState extends State<AddScreen> {
                         ),
                         Positioned(
                           top: 12,
-                          right: 0,
+                          right: MediaQuery.of(context).size.width / 15,
                           child: Container(
-                            margin: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width / 15,
-                            ),
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               child: Container(
@@ -200,6 +199,25 @@ class _AddScreenState extends State<AddScreen> {
                             ),
                           ),
                         ),
+                        Positioned(
+                            top: 80,
+                            right: MediaQuery.of(context).size.width / 18,
+                            child: GestureDetector(
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return EmojiPicker();
+                                },
+                              ).then((value) => value != null
+                                  ? setState(() {
+                                      emoji = value;
+                                    })
+                                  : null),
+                              child: Text(
+                                emoji,
+                                style: TextStyle(fontSize: 40),
+                              ),
+                            ))
                       ],
                     ),
                   ),
@@ -245,6 +263,10 @@ class _AddScreenState extends State<AddScreen> {
                                   callbackm2: callbackm2,
                                   name: 'Выберите время',
                                   timeType: widget.buttonType,
+                                  h1: 0,
+                                  m1: 0,
+                                  h2: 0,
+                                  m2: 0,
                                 ),
                               ),
                             );
@@ -256,12 +278,10 @@ class _AddScreenState extends State<AddScreen> {
                         ? await Provider.of<Activities>(this.context,
                                 listen: false)
                             .isAllowed(
-                            double.parse(hour1) / 24 +
-                                double.parse(minute1) / 1440,
+                            timeAbsoluteToRelative(hour1, minute1),
                             widget.buttonType == ButtonType.task
                                 ? 2
-                                : double.parse(hour2) / 24 +
-                                    double.parse(minute2) / 1440,
+                                : timeAbsoluteToRelative(hour2, minute2),
                             '${uuid.v1()}',
                           )
                         : await Provider.of<Activities>(this.context,
@@ -288,18 +308,19 @@ class _AddScreenState extends State<AddScreen> {
                                   2,
                                   2,
                                   color,
-                                  '${Provider.of<Activities>(this.context, listen: false).date1.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date1.date))}-${day(Provider.of<Activities>(this.context, listen: false).date1.date)}');
+                                  '${Provider.of<Activities>(this.context, listen: false).date.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date.date))}-${day(Provider.of<Activities>(this.context, listen: false).date.date)}',
+                                  emoji);
                         } else if (widget.buttonType == ButtonType.task) {
                           Navigator.pop(context);
                           Provider.of<Activities>(this.context, listen: false)
                               .addActivity(
                                   '${uuid.v1()}',
                                   _textController.text,
-                                  double.parse(hour1) / 24 +
-                                      double.parse(minute1) / 1440,
+                                  timeAbsoluteToRelative(hour1, minute1),
                                   2,
                                   color,
-                                  '${Provider.of<Activities>(this.context, listen: false).date1.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date1.date))}-${day(Provider.of<Activities>(this.context, listen: false).date1.date)}');
+                                  '${Provider.of<Activities>(this.context, listen: false).date.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date.date))}-${day(Provider.of<Activities>(this.context, listen: false).date.date)}',
+                                  emoji);
                           // Provider.of<Activities>(this.context, listen: false)
                           //     .clear();
                         } else if (widget.buttonType == ButtonType.activity) {
@@ -308,12 +329,11 @@ class _AddScreenState extends State<AddScreen> {
                               .addActivity(
                                   '${uuid.v1()}',
                                   _textController.text,
-                                  double.parse(hour1) / 24 +
-                                      double.parse(minute1) / 1440,
-                                  double.parse(hour2) / 24 +
-                                      double.parse(minute2) / 1440,
+                                  timeAbsoluteToRelative(hour1, minute1),
+                                  timeAbsoluteToRelative(hour2, minute2),
                                   color,
-                                  '${Provider.of<Activities>(this.context, listen: false).date1.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date1.date))}-${day(Provider.of<Activities>(this.context, listen: false).date1.date)}');
+                                  '${Provider.of<Activities>(this.context, listen: false).date.date.year}-${(month(Provider.of<Activities>(this.context, listen: false).date.date))}-${day(Provider.of<Activities>(this.context, listen: false).date.date)}',
+                                  emoji);
                           // Provider.of<Activities>(this.context, listen: false)
                           //     .clear();
                         }
@@ -364,7 +384,7 @@ class _AddScreenState extends State<AddScreen> {
                             child: Text(
                               Provider.of<Activities>(this.context,
                                       listen: true)
-                                  .date1
+                                  .date
                                   .date
                                   .day
                                   .toString(),

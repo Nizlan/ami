@@ -8,7 +8,7 @@ class DBHelper {
     return sql.openDatabase(path.join(dbPath, 'ami.db'),
         onCreate: (db, version) {
       db.execute(
-          'CREATE TABLE activities(id TEXT PRIMARY KEY, name TEXT, start REAL, end REAL, color TEXT, isDone INTEGER, date TEXT, serial INTEGER)');
+          'CREATE TABLE activities(id TEXT PRIMARY KEY, name TEXT, start REAL, end REAL, color TEXT, isDone INTEGER, date TEXT, serial INTEGER, emoji TEXT)');
       db.execute(
           'CREATE TABLE night(id TEXT PRIMARY KEY, start REAL, end REAL, color TEXT)');
     }, version: 2);

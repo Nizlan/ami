@@ -1,0 +1,1 @@
+enum DayChangeType { tomorrow, yesterday }

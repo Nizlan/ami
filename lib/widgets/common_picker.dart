@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import '../utils/is_current_time.dart';
+
 class CommonPicker extends StatefulWidget {
   final MediaQueryData size;
   final Activity activity;
@@ -70,8 +72,8 @@ class _CommonPickerState extends State<CommonPicker> {
         margin: EdgeInsets.only(right: 10),
         elevation: 0.0,
         child: ListTile(
-          tileColor: Provider.of<Activities>(this.context, listen: false)
-                  .isCurrentTime(widget.activity.start, widget.activity.end)
+          tileColor: isCurrentTime(widget.activity.start, widget.activity.end,
+                  Provider.of<Activities>(this.context, listen: false).rotation)
               ? toColor(widget.activity.color)
               : Colors.white,
           leading: Transform.scale(
@@ -102,10 +104,12 @@ class _CommonPickerState extends State<CommonPicker> {
                   ? Text(
                       '${timeConverter(widget.activity.start.toDouble())[0]}:${timeConverter(widget.activity.start.toDouble())[1]}',
                       style: TextStyle(
-                        color: Provider.of<Activities>(this.context,
-                                    listen: false)
-                                .isCurrentTime(
-                                    widget.activity.start, widget.activity.end)
+                        color: isCurrentTime(
+                                widget.activity.start,
+                                widget.activity.end,
+                                Provider.of<Activities>(this.context,
+                                        listen: false)
+                                    .rotation)
                             ? Colors.white
                             : Colors.black,
                         fontSize: 13,
@@ -113,10 +117,12 @@ class _CommonPickerState extends State<CommonPicker> {
                   : Text(
                       '${timeConverter(widget.activity.start.toDouble())[0]}:${timeConverter(widget.activity.start.toDouble())[1]} - ${timeConverter(widget.activity.end.toDouble())[0]}:${timeConverter(widget.activity.end.toDouble())[1]}',
                       style: TextStyle(
-                          color: Provider.of<Activities>(this.context,
-                                      listen: false)
-                                  .isCurrentTime(widget.activity.start,
-                                      widget.activity.end)
+                          color: isCurrentTime(
+                                  widget.activity.start,
+                                  widget.activity.end,
+                                  Provider.of<Activities>(this.context,
+                                          listen: false)
+                                      .rotation)
                               ? Colors.white
                               : Colors.black,
                           fontSize: 13))

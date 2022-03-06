@@ -67,7 +67,7 @@ class _PickerState extends State<Picker> {
           setState(() {
             text = arr[value];
             selectedValue = text.data;
-            this.widget.callback(selectedValue);
+            this.widget.callback(int.parse(selectedValue));
           });
         },
         itemExtent: 32.0,

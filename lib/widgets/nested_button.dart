@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:ami/models/button_type.dart';
+import 'package:ami/enums/button_type.dart';
 import 'package:ami/screens/add_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -61,12 +61,8 @@ class _NestedButtonsState extends State<NestedButtons> {
             scale: scale,
             child: FloatingActionButton(
               onPressed: () {
-                isMainButton
-                    ? changeIsOpen()
-                    : {
-                        changeIsOpen(),
-                        showModalSheet(screen),
-                      };
+                changeIsOpen();
+                if (!isMainButton) showModalSheet(screen);
               },
               child: Transform.scale(scale: 2, child: icon),
             ),
@@ -78,44 +74,38 @@ class _NestedButtonsState extends State<NestedButtons> {
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(
-        sigmaX: sigmaX,
-        sigmaY: sigmaY,
-      ),
-      child: Container(
-        height: 200,
-        padding: EdgeInsets.fromLTRB(0, 0, 10, 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          verticalDirection: VerticalDirection.up,
-          children: [
-            nestedButton(null, 1.2, true,
-                isOpen ? Icon(Icons.keyboard_arrow_down) : Icon(Icons.add), ''),
-            if (isOpen)
-              nestedButton(
-                  AddScreen(buttonType: ButtonType.task),
-                  1.0,
-                  false,
-                  SvgPicture.asset(
-                    'assets/images/icon_task.svg',
-                    width: 15,
-                    height: 15,
-                  ),
-                  'Задача'),
-            if (isOpen)
-              nestedButton(
-                  AddScreen(buttonType: ButtonType.activity),
-                  1.0,
-                  false,
-                  SvgPicture.asset(
-                    'assets/images/icon_activity.svg',
-                    width: 15,
-                    height: 15,
-                  ),
-                  'Активность'),
-          ],
-        ),
+    return Container(
+      height: 200,
+      padding: EdgeInsets.fromLTRB(0, 0, 10, 15),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        verticalDirection: VerticalDirection.up,
+        children: [
+          nestedButton(null, 1.2, true,
+              isOpen ? Icon(Icons.keyboard_arrow_down) : Icon(Icons.add), ''),
+          if (isOpen)
+            nestedButton(
+                AddScreen(buttonType: ButtonType.task),
+                1.0,
+                false,
+                SvgPicture.asset(
+                  'assets/images/icon_task.svg',
+                  width: 15,
+                  height: 15,
+                ),
+                'Задача'),
+          if (isOpen)
+            nestedButton(
+                AddScreen(buttonType: ButtonType.activity),
+                1.0,
+                false,
+                SvgPicture.asset(
+                  'assets/images/icon_activity.svg',
+                  width: 15,
+                  height: 15,
+                ),
+                'Активность'),
+        ],
       ),
     );
   }

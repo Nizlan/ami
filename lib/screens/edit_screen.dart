@@ -1,6 +1,5 @@
 import 'package:ami/models/activity.dart';
 import 'package:ami/providers/activities_provider.dart';
-import 'package:ami/providers/diagram_params_provider.dart';
 import 'package:ami/widgets/color_picker.dart';
 import 'package:ami/widgets/cupertino_picker.dart';
 import 'package:flutter/material.dart';
